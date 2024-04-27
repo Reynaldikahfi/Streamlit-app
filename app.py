@@ -13,7 +13,7 @@ st.title("Halo")
 label_encoders = {}
 for column in transform_data.columns:
     le = LabelEncoder()
-    transform_data[column] = le.fit_transform(transfrom_data[column])
+    transform_data[column] = le.fit_transform(transform_data[column])
     label_encoders[column] = le
 
 color_op = ['Cool', 'Neutral', 'Warm']
