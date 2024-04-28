@@ -1,27 +1,35 @@
-import streamlit as st
-import pandas as pd
-import joblib
-from sklearn.preprocessing import LabelEncoder
+import streamlit as st #import library streamlit ke program python
+import pandas as pd #import library pandas ke program python untuk manipulasi data
+import joblib  #import model yg sudah dilatih joblib 
+from sklearn.preprocessing import LabelEncoder # import LabelEncoder untuk encoding data kategorikal
 
-# Load model
+#load model yg telah dilatih
 model = joblib.load("rey.joblib")
 
-# Load mapped data
+#load data yang telah dipetakan
 transform_data = pd.read_csv("transform_data.csv")
+# judul aplikasi di halaman web
 st.title("Halo")
-# Membuat label encoder
+#label encoder untuk setiap kolom data
 label_encoders = {}
+#iterasi setiap kolom dalam data yg telah dipetakan
 for column in transform_data.columns:
+    #inisialisasi objek LabelEncoder
     le = LabelEncoder()
+    #enccoding dalam kolom
     transform_data[column] = le.fit_transform(transform_data[column])
+     #simpan objek LabelEncoder dalam directionary untuk penggunaan berikutnya 
     label_encoders[column] = le
 
+#opsi yang dapat dipilih dalam setiap fitur halaman web sesuai data
 color_op = ['Cool', 'Neutral', 'Warm']
 music_genre_op = ['Rock', 'Hip hop', 'Folk/Traditional', 'Jazz/Blues', 'Pop', 'Electronic','R&B and soul']
 beverage_op = ['Vodka', 'Wine', 'Whiskey',"Doesn't drink",'Beer', 'Other']
 soft_drink_op = ['7UP/Sprite', 'Coca Cola/Pepsi','Fanta','Other']
 
+#pemetaan opsi yang dipilih ke nilai numerik setiap fitur fitur warna
 color_map = {'Cool': 1, 'Neutral': 2, 'Warm': 3}
+#fitur genre lagu
 music_genre_map = {
     'Rock': 1, 
     'Hip hop': 2, 
@@ -33,6 +41,7 @@ music_genre_map = {
 } 
 
 
+#fitur minuman
 beverage_map = {
     'Vodka' : 1, 
     'Wine' : 2, 
@@ -49,15 +58,14 @@ soft_drink_map = {
 }
 
 
-# Create selectbox for each feature
+#buat selectbox dropdown untuk setiap fitur di halaman web
 favorite_color = st.selectbox('Favorite Color', ['Select']+color_op)
 favorite_music_genre = st.selectbox('Favorite Music Genre', ['Select']+music_genre_op)
 favorite_beverage = st.selectbox('Favorite Beverage', ['Select']+beverage_op)
 favorite_soft_drink = st.selectbox('Favorite Soft Drink', ['Select']+soft_drink_op)
 
 
-# Tambahkan tombol untuk memicu prediksi
-
+#Tambahkan tombol untuk memicu prediksi
 if st.button('Predict'):
     if favorite_color != 'Select' and favorite_music_genre != 'Select' and favorite_beverage != 'Select' and favorite_soft_drink != 'Select':
         favorite_color_numeric = color_map[favorite_color]
@@ -65,11 +73,11 @@ if st.button('Predict'):
         favorite_beverage_numeric = beverage_map[favorite_beverage]
         favorite_soft_drink_numeric = soft_drink_map[favorite_soft_drink]
 
-        # Prediksi gender berdasarkan nilai numerik
+        #Prediksi gender berdasarkan nilai numerik
         prediction = model.predict([[favorite_color_numeric, favorite_music_genre_numeric, favorite_beverage_numeric, favorite_soft_drink_numeric]])[0]
         
 
-        # Menampilkan hasil prediksi
+        #Menampilkan hasil prediksi
         st.write(f"Predicted Gender: {prediction}")
     else:
         st.write("Please select values for all features.")
